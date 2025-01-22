@@ -19,10 +19,10 @@ pipeline {
 	 stage('deploy') {
 	  steps {
 		echo "deploy the django app"
-		sh "docker stop ${Container_name} || true && 
+		sh """docker stop ${Container_name} || true && 
 		    docker rm ${Container_name} || true &&
 		    docker run -d --name ${Container_name} -p ${port}:${port} ${docker_image}:${docker_Tag}
-		   "
+		   """
 		}
        	    }
 	}
@@ -31,7 +31,7 @@ pipeline {
 		echo "waiting for 30 min before remove docker container"
 		sh 'sleep 1800' // sleep for 30 min before clean up of container
 		
-		//clean up the container 
+		// clean up the container 
 		echo "To clean up docker container"
 		sh "docker system prune -f"
 	   }
