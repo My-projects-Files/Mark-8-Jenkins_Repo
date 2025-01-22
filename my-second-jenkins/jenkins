@@ -1,0 +1,40 @@
+pipeline {
+	agent any
+	
+	environment {
+	 docker_image= "kamalsai33/pyth-1"
+	 docker_Tag= "latest"
+	 port= "8000"
+	 Container_name= "django"
+	 }
+
+	stages {
+	 stage('pull') {
+	  steps {
+		echo "pull docker image from docker hub"
+		sh "docker pull ${docker_image}:${docker_Tag}"
+		}
+	    }	
+		
+	 stage('deploy') {
+	  steps {
+		echo "deploy the django app"
+		sh "docker stop ${Container_name} || true && 
+		    docker rm ${Container_name} || true &&
+		    docker run -d --name ${Container_name} -p ${port}:${port} ${docker_image}:${docker_Tag}
+		   "
+		}
+       	    }
+	}
+	post {
+	 always {
+		echo "waiting for 30 min before remove docker container"
+		sh 'sleep 1800' // sleep for 30 min before clean up of container
+		
+		//clean up the container 
+		echo "To clean up docker container"
+		sh "docker system prune -f"
+	   }
+	}
+	
+ }
