@@ -7,7 +7,7 @@ pipeline {
 	Front_IM = "mern-frontend"
 	back_IM = "mern-backend"
 	Front_CN = "fronend"
-	back_CN = "backend
+	back_CN = "backend"
 	net = "line"
 	}
 	stages {
