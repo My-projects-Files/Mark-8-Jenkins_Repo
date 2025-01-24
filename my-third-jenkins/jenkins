@@ -1,0 +1,88 @@
+pipeline {
+	agent any
+	environment {
+	f_port = 5173
+	d_port = 27017
+	b_port = 5050
+	Front_IM = "mern-frontend"
+	back_IM = "mern-backend"
+	Front_CN = "fronend"
+	back_CN = "backend
+	net = "line"
+	}
+	stages {
+	  stage('checkout') {
+            steps {
+                url: https://github.com/My-projects-Files/Mark-9
+		branch: main 
+                  }
+            }
+	stage('network') {
+	 steps {
+		script {
+		 sh '''
+		   echo 'docker network created'
+		   docker network create ${net}
+		 '''
+		}
+	    }
+	}
+ 
+	stage('front-end') {
+	    steps {
+		script {
+			sh '''
+                          echo 'docker frontend build'
+			  docker stop ${Front_CN} || true && 
+		    	  docker rm ${Front_CN} || true &&
+			  docker rmi -f ${Front_IM} || true &&
+			  docker build -t ${Front_IM}:led Mern-9/mern_app/mern/fronend/.
+			  echo 'docker frontend deploy"
+                          docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
+			'''
+		  }
+	    }
+
+	stage('data-base') {
+            steps {
+		script {
+                        sh '''
+                          echo 'docker mongodb build'
+                          docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongodb:latest
+                        '''
+                        }
+
+                  }
+            }
+	stage('back-end') {
+            steps {
+		script {
+                        sh '''
+                          echo 'docker backend build'
+			  docker stop ${back_CN} || true &&
+                          docker rm ${back_CN} || true &&
+                          docker rmi -f ${back_IM} || true &&
+			  docker build -t ${back_CN}:led Mern-9/mern_app/mern/backend/.
+			  echo 'docker backend deploy"
+			  docker run --name=${back_CN} --network=${net} -d -p ${b_port}:${b_port} ${back_IM}:led
+                        '''
+                        }
+
+                  }
+            }
+
+	post {
+	 always {
+		echo "waiting for 30 min before remove docker container"
+		sh 'sleep 1800' // sleep for 30 min before clean up of container
+		
+		// clean up the container 
+		echo "To clean up docker container and network"	
+		sh '''
+		  docker system prune -f
+		  docker network remove ${net} || true
+		'''
+	    }
+	}
+    }
+}
