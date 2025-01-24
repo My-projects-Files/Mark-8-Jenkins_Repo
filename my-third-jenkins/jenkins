@@ -17,6 +17,7 @@ pipeline {
 		branch: main 
                   }
             }
+	}
 	stage('network') {
 	 steps {
 		script {
@@ -42,7 +43,7 @@ pipeline {
 			'''
 		  }
 	    }
-
+	}
 	stage('data-base') {
             steps {
 		script {
