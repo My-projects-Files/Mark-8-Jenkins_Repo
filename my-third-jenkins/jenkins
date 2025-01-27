@@ -17,21 +17,21 @@ pipeline {
 		branch: main 
                   }
             }
-	}
-	stage('network') {
-	 steps {
+	
+	  stage('network') {
+	    steps {
 		script {
 		 sh '''
 		   echo 'docker network created'
 		   docker network create ${net}
 		 '''
-		}
-	    }
-	}
+		 }
+	      }
+	  }
  
-	stage('front-end') {
-	    steps {
-		script {
+	   stage('front-end') {
+	     steps {
+		 script {
 			sh '''
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
@@ -41,23 +41,23 @@ pipeline {
 			  echo 'docker frontend deploy"
                           docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
 			'''
-		  }
-	    }
-	}
-	stage('data-base') {
-            steps {
-		script {
+		   }
+	       }
+	   }
+	   stage('data-base') {
+              steps {
+		  script {
                         sh '''
                           echo 'docker mongodb build'
                           docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongodb:latest
                         '''
-                        }
-
-                  }
-            }
-	stage('back-end') {
-            steps {
-		script {
+                         }
+ 
+                   }
+             }
+	    stage('back-end') {
+               steps {
+		 script {
                         sh '''
                           echo 'docker backend build'
 			  docker stop ${back_CN} || true &&
@@ -69,8 +69,8 @@ pipeline {
                         '''
                         }
 
-                  }
-            }
+                    }
+               }
 
 	post {
 	 always {
