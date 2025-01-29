@@ -11,28 +11,28 @@ pipeline {
 	net = "line"
 	}
 	stages {
-	  stage('checkout') {
+	  stage('check') {
             steps {
                 url: https://github.com/My-projects-Files/Mark-9
 		branch: main 
                   }
             }
-	}
-	stage('network') {
-	 steps {
+	
+	  stage('network') {
+	    steps {
 		script {
 		 sh '''
 		   echo 'docker network created'
 		   docker network create ${net}
 		 '''
-		}
-	    }
-	}
+		 }
+	      }
+	  }
  
-	stage('front-end') {
-	    steps {
-		script {
-			sh '''
+	   stage('front-end') {
+	     steps {
+		 script {
+		      sh '''
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
 		    	  docker rm ${Front_CN} || true &&
@@ -40,24 +40,24 @@ pipeline {
 			  docker build -t ${Front_IM}:led Mern-9/mern_app/mern/fronend/.
 			  echo 'docker frontend deploy"
                           docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
-			'''
-		  }
-	    }
-	}
-	stage('data-base') {
-            steps {
-		script {
+		       '''
+		   }
+	       }
+	   }
+	   stage('data-base') {
+              steps {
+		  script {
                         sh '''
                           echo 'docker mongodb build'
                           docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongodb:latest
                         '''
-                        }
-
-                  }
-            }
-	stage('back-end') {
-            steps {
-		script {
+                         }
+ 
+                   }
+             }
+	    stage('back-end') {
+               steps {
+		 script {
                         sh '''
                           echo 'docker backend build'
 			  docker stop ${back_CN} || true &&
@@ -69,9 +69,9 @@ pipeline {
                         '''
                         }
 
-                  }
-            }
-
+                    }
+               }
+	}
 	post {
 	 always {
 		echo "waiting for 30 min before remove docker container"
@@ -80,10 +80,10 @@ pipeline {
 		// clean up the container 
 		echo "To clean up docker container and network"	
 		sh '''
-		  docker system prune -f
-		  docker network remove ${net} || true
+		    docker system prune -f
+		    docker network remove ${net} || true
 		'''
 	    }
 	}
-    }
-}
+ }
+
