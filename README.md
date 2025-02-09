@@ -126,6 +126,16 @@ http://<ec2-instance-public-ip>:8080/restart
 
 The docker agent configuration is now successful.
 
+## kubernet cluster to deploy
+we can configure the kubenet cluster like minikube, so we can run the jenkins in the cluster
+
+we need to deploy a minikube cluster and jenkins in the machine and the connection need to be in place for the both jenkins and kubernet in minikube cluster. check this if we have an issue with the connectivity.
+~~~
+https://github.com/My-projects-Files/Mark-8/issues/11
+~~~
+
+
+
 
 
 
