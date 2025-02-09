@@ -134,7 +134,15 @@ we need to deploy a minikube cluster and jenkins in the machine and the connecti
 https://github.com/My-projects-Files/Mark-8/issues/11
 ~~~
 
+## This is to configure minikube kubernet cluster as slave for the jenkins
 
+first we need running minikube cluster and jenkins
+we need to have kubernet plugins installed
+jenkins ==>dashboard==>manage jenkins==>plugins==>kubernet
+Then we can add kubernet as cloud slave
+manage jenkins ==>clouds==> new cloud ==>name and select kubernet
+
+now we need to configure the cluster to interact with the jenkins
 
 
 
