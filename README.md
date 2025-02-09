@@ -137,14 +137,30 @@ https://github.com/My-projects-Files/Mark-8/issues/11
 ## This is to configure minikube kubernet cluster as slave for the jenkins
 
 first we need running minikube cluster and jenkins
-we need to have kubernet plugins installed
-jenkins ==>dashboard==>manage jenkins==>plugins==>kubernet
-Then we can add kubernet as cloud slave
-manage jenkins ==>clouds==> new cloud ==>name and select kubernet
 
+we need to have kubernet plugins installed
+~~~
+jenkins ==>dashboard==>manage jenkins==>plugins==>kubernet
+~~~
+Then we can add kubernet as cloud slave
+~~~
+manage jenkins ==>clouds==> new cloud ==>name and select kubernet
+~~~
 now we need to configure the cluster to interact with the jenkins
 
+open ./kube/config and there we find the keys path which is not accepted
+~~~
+cat <path>|base64 -w 0;echo
+~~~
+past the outputs and dont forget to edit the names as data
+~~~
+certificate-authority-data:
 
+client-certificate-data:
+
+client-key-data:
+~~~
+Then we can add the encripted keys and selet them in the jenkins cloud file for setting them as slaves 
 
 
 
