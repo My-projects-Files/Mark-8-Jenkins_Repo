@@ -23,7 +23,7 @@ pipeline {
 		script {
 		 sh '''
 		   echo 'docker network created'
-		   docker network create ${net} || true &&
+		   docker network create ${net} || true
 		 '''
 		 }
 	      }
