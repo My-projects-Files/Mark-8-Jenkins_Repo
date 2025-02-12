@@ -6,7 +6,7 @@ pipeline {
 	b_port = 5050
 	Front_IM = "mern-frontend"
 	back_IM = "mern-backend"
-	Front_CN = "fronend"
+	Front_CN = "frontend"
 	back_CN = "backend"
 	net = "line"
 	}
@@ -33,13 +33,13 @@ pipeline {
 	     steps {
 		 script {
 		      sh '''
-			 ls -l mern_app/mern/frontend
+			ls -l
 			 docker images
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
 		    	  docker rm ${Front_CN} || true &&
 			  docker rmi -f ${Front_IM} || true &&
-			  docker build -t ${Front_IM}:led mern_app/mern/fronend/Dockerfile
+			  docker build -t ${Front_IM}:led mern_app/mern/frontend/Dockerfile
 			  echo 'docker frontend deploy"
                           docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
 		       '''
