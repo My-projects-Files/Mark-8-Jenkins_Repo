@@ -33,6 +33,8 @@ pipeline {
 	     steps {
 		 script {
 		      sh '''
+			 ls -l
+			 docker images
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
 		    	  docker rm ${Front_CN} || true &&
