@@ -6,15 +6,15 @@ pipeline {
 	b_port = 5050
 	Front_IM = "mern-frontend"
 	back_IM = "mern-backend"
-	Front_CN = "fronend"
+	Front_CN = "frontend"
 	back_CN = "backend"
 	net = "line"
 	}
 	stages {
 	  stage('check') {
             steps {
-                url: https://github.com/My-projects-Files/Mark-9
-		branch: main 
+                git url: 'https://github.com/My-projects-Files/Mark-9',
+		branch: 'main' 
                   }
             }
 	
@@ -23,7 +23,7 @@ pipeline {
 		script {
 		 sh '''
 		   echo 'docker network created'
-		   docker network create ${net}
+		   docker network create ${net} || true
 		 '''
 		 }
 	      }
@@ -33,12 +33,14 @@ pipeline {
 	     steps {
 		 script {
 		      sh '''
+			ls -l
+			 docker images
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
 		    	  docker rm ${Front_CN} || true &&
 			  docker rmi -f ${Front_IM} || true &&
-			  docker build -t ${Front_IM}:led Mern-9/mern_app/mern/fronend/.
-			  echo 'docker frontend deploy"
+			  docker build -t ${Front_IM}:led mern_app/mern/frontend/.
+			  echo 'docker frontend deploy'
                           docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
 		       '''
 		   }
@@ -49,7 +51,7 @@ pipeline {
 		  script {
                         sh '''
                           echo 'docker mongodb build'
-                          docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongodb:latest
+                          docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongo:latest || true
                         '''
                          }
  
@@ -63,8 +65,8 @@ pipeline {
 			  docker stop ${back_CN} || true &&
                           docker rm ${back_CN} || true &&
                           docker rmi -f ${back_IM} || true &&
-			  docker build -t ${back_CN}:led Mern-9/mern_app/mern/backend/.
-			  echo 'docker backend deploy"
+			  docker build -t ${back_IM}:led mern_app/mern/backend/.
+			  echo 'docker backend deploy'
 			  docker run --name=${back_CN} --network=${net} -d -p ${b_port}:${b_port} ${back_IM}:led
                         '''
                         }
