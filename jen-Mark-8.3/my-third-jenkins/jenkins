@@ -51,7 +51,7 @@ pipeline {
 		  script {
                         sh '''
                           echo 'docker mongodb build'
-                          docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongodb:latest
+                          docker run --network=${net} --name mongodb -d -p ${d_port}:${d_port} -v ~/opt/data:/data/db mongo:latest
                         '''
                          }
  
