@@ -33,7 +33,7 @@ pipeline {
 	     steps {
 		 script {
 		      sh '''
-			 ls -l mern_app/mern
+			 ls -l mern_app/mern/fronend
 			 docker images
                           echo 'docker frontend build'
 			  docker stop ${Front_CN} || true && 
