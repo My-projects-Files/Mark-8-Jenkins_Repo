@@ -65,7 +65,7 @@ pipeline {
 			  docker stop ${back_CN} || true &&
                           docker rm ${back_CN} || true &&
                           docker rmi -f ${back_IM} || true &&
-			  docker build -t ${back_CN}:led mern_app/mern/backend/.
+			  docker build -t ${back_IM}:led mern_app/mern/backend/.
 			  echo 'docker backend deploy'
 			  docker run --name=${back_CN} --network=${net} -d -p ${b_port}:${b_port} ${back_IM}:led
                         '''
