@@ -13,8 +13,8 @@ pipeline {
 	stages {
 	  stage('check') {
             steps {
-                url: https://github.com/My-projects-Files/Mark-9
-		branch: main 
+                git url: 'https://github.com/My-projects-Files/Mark-9',
+		branch: 'main' 
                   }
             }
 	
