@@ -40,7 +40,7 @@ pipeline {
 		    	  docker rm ${Front_CN} || true &&
 			  docker rmi -f ${Front_IM} || true &&
 			  docker build -t ${Front_IM}:led mern_app/mern/frontend/.
-			  echo 'docker frontend deploy"
+			  echo 'docker frontend deploy'
                           docker run --name=${Front_CN} --network=${net} -d -p ${f_port}:${f_port} ${Front_IM}:led
 		       '''
 		   }
