@@ -1,0 +1,24 @@
+pipeline {
+	agent any
+	
+
+	stages{
+		stage('check') {
+			steps {
+			   git url: 'https://github.com/My-projects-Files/Mark-9',
+			   branch: 'main'
+			}
+		    }
+		stage ('compose) {
+				steps { 
+				   script{
+					sh '''
+					   ls -l
+					   docker-compose up -d
+					'''
+					}
+				}
+			}
+		}
+	}
+
