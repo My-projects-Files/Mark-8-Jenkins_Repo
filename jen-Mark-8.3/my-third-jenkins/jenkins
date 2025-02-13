@@ -36,8 +36,7 @@ pipeline {
 			ls -l
 			 docker images
                           echo 'docker frontend build'
-			  docker stop ${Front_CN} || true && 
-		    	  docker rm ${Front_CN} || true &&
+		    	  docker rm -f ${Front_CN} || true &&
 			  docker rmi -f ${Front_IM} || true &&
 			  docker build -t ${Front_IM}:led mern_app/mern/frontend/.
 			  echo 'docker frontend deploy'
@@ -62,8 +61,7 @@ pipeline {
 		 script {
                         sh '''
                           echo 'docker backend build'
-			  docker stop ${back_CN} || true &&
-                          docker rm ${back_CN} || true &&
+                          docker rm -f ${back_CN} || true &&
                           docker rmi -f ${back_IM} || true &&
 			  docker build -t ${back_IM}:led mern_app/mern/backend/.
 			  echo 'docker backend deploy'
@@ -77,13 +75,15 @@ pipeline {
 	post {
 	 always {
 		echo "waiting for 30 min before remove docker container"
-		sh 'sleep 1800' // sleep for 30 min before clean up of container
+		sh 'sleep 180' // sleep for 3 min before clean up of container
 		
 		// clean up the container 
 		echo "To clean up docker container and network"	
 		sh '''
 		    docker system prune -f
 		    docker network remove ${net} || true
+		    docker rm -f ${Front_CN} ${back_CN} mongodb || true
+		    docker rmi -f ${Front_IM} ${back_IM} mongo:latest || true
 		'''
 	    }
 	}
