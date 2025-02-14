@@ -9,7 +9,7 @@ pipeline {
 			   branch: 'main'
 			}
 		    }
-		stage ('compose) {
+		stage ('compose') {
 				steps { 
 				   script{
 					sh '''
