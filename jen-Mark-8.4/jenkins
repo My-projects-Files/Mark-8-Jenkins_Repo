@@ -41,7 +41,18 @@ pipeline {
     post {
         success {
             echo 'pipeline complete'
-        }
+		echo "waiting for 3 min before remove Kubernet deployments"
+		sh 'sleep 180' // sleep for 3 min before clean up of container
+		
+		// clean up the container 
+		echo "To clean up kuber deployments, network and docker images"	
+		sh '''
+		    kubectl delete deployment ${KUBE_DEPLOY} || true
+		    kubectl delete svc ${KUBE_SERV} || true
+		    docker rmi kamalsai33/puyt:latest || true
+		'''
+	    }
+	}
         failure {
             echo 'pipeline failed'
         }

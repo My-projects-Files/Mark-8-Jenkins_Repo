@@ -9,11 +9,12 @@ pipeline {
 			   branch: 'main'
 			}
 		    }
-		stage ('compose) {
+		stage ('compose') {
 				steps { 
 				   script{
 					sh '''
 					   ls -l
+					   cd mern_app/
 					   docker-compose up -d
 					'''
 					}
