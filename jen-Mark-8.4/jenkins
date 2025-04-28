@@ -19,13 +19,13 @@ pipeline {
         stage('pull docker') {
             steps {
                 script {
-                    sh 'docker ps'  // This line is likely fine, no issue here.
-                    sh 'docker -D pull kamalsai33/puyt:latest'  // This line also seems fine.
+                    sh 'docker ps'  
+                    sh 'docker -D pull kamalsai33/puyt:latest' 
                 }
             }
         }
 
-        stage('deploy to kubernet') {  // This stage may be problematic, specifically with its structure.
+        stage('deploy to kubernet') {  
             steps {
                 script {
                     sh 'echo "Current Directory Contents:"'
