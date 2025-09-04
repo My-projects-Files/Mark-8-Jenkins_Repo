@@ -1,0 +1,85 @@
+pipeline {
+    agent any   
+    environment {
+        def SERVICE = ['user-service', 'order-service']
+        DOCKER_HUB_USER = "kamalsai33"
+    }
+
+    stages {
+        stage('checkout'){
+            steps{
+                git branch: 'main' url: 'https://github.com/saikamal33/Mark-8-Jenkins_Repo.git'
+            }
+        }
+        stage('install dependencides'){
+            steps{
+                script{
+                    for (svc in env.SERVICE){
+                        dir("${svc}") { 
+                            sh """
+                                python3 -m venv ${svc}
+                                ./${svc}/bin/pip install -r requirements.txt
+                                ./${svc}/bin/pip install pytest flask8
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        stage('testing'){
+            steps{
+                script{
+                    for (svc in env.SERVICE){
+                        dir("${svc}"){
+                            sh"""
+                                # this is for linting the code
+                                ./${svc}/bin/flask8 .
+
+                                #to run automated test suites- we need to have tests present in tests file
+                                #./${svc}/bin/pytest tests
+
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        stage('build and push code') {
+            steps{
+                script{
+                    for (svc in env.SERVICE6){
+                        dir("${svc}") {
+                            sh """
+                                echo "building ${svc}"
+                                docker build -t ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER} .
+                                echo "${DOCKER_HUB_PASS}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin
+                                docker push ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER}
+                            """
+                        }
+                    }
+                }
+            }
+        
+        }
+        stage('updating kube image'){
+            steps{
+                script{
+
+                }
+            }
+
+        }
+    }
+    post {
+        failure {
+            echo "Build or test failed"
+        }
+        success {
+            microservice build, test, and deploy completed
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
+
