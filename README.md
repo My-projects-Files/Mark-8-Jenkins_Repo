@@ -8,6 +8,7 @@ Install Jenkins, configure Docker as agent, set up cicd, deploy applications to 
 - when we are using a script and calling a vaiable in sh we need to user "" insted of a ''.
 - Groovy allows interations and having run different script in diff directories.
 - if we are accessing env vaiable inside the sh then we can just call it directly as "VALUE" , but if we are using it out side of sh then we need to call it as "env.VALUE"
+- **withCredentials** - this directly injects the credentials without the need to hardcode them. it is used to securely access credentials stored in Jenkins' Credentials Manager during a pipeline run.
 
 ## AWS EC2 Instance
 

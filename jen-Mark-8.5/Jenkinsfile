@@ -1,7 +1,7 @@
 pipeline {
     agent any   
     environment {
-        def SERVICE = ['user-service', 'order-service']
+        
         DOCKER_HUB_USER = "kamalsai33"
     }
 
@@ -14,7 +14,8 @@ pipeline {
         stage('install dependencides'){
             steps{
                 script{
-                    for (svc in env.SERVICE){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}") { 
                             sh """
                                 python3 -m venv ${svc}
@@ -29,7 +30,8 @@ pipeline {
         stage('testing'){
             steps{
                 script{
-                    for (svc in env.SERVICE){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}"){
                             sh"""
                                 # this is for linting the code
@@ -47,14 +49,13 @@ pipeline {
         stage('build and push code') {
             steps{
                 script{
-                    for (svc in env.SERVICE6){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}") {
-                            sh """
-                                echo "building ${svc}"
-                                docker build -t ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER} .
-                                echo "${DOCKER_HUB_PASS}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin
-                                docker push ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER}
-                            """
+                                def dockerimg = docker.build ("${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}")
+                                docker.withRegistry('https://index.docker.io/v1/', "docker-crd") {
+                                    dockerimg.push()
+                                }    
                         }
                     }
                 }
