@@ -1,8 +1,13 @@
 pipeline {
-    agent any   
+    agent any 
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Git branch to build')
+        string(name: 'IMAGE_TAG', defaultValue: '${BUILD_NUMBER}', description: 'Docker image tag')
+    }
     environment {
         
         DOCKER_HUB_USER = "kamalsai33"
+        GIT_DEST_REPO = "https://github.com/saikamal33/Mark-10-Kubernet_repo.git"
         GIT_REPO_NAME = "Mark-10-Kubernet_repo"
         GIT_USER_EMAIL = "kamaleshsai33@gmail.com"
         GIT_USER_NAME = "saikamal33"
@@ -74,7 +79,7 @@ pipeline {
                         def DOCKER_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
                         dir("${svc}") {
                                 	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                				sh '''
+                				sh """
                 				    ls -l
                 				    git clone ${GIT_DEST_REPO}
                 				    cd Mark-10-Kubernet_repo
@@ -84,7 +89,7 @@ pipeline {
                 		                    git add kube-Mark-10.6/${svc}/deployment.yml
                 		                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                 		                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                		                '''
+                		            """
                                     }
                             }
                     }
