@@ -90,16 +90,17 @@ pipeline {
                 		                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                 		                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                 		            """
-                                    }
-                            }
+                                        }
+                                }
+                        }
                     }
-            }
 
+                }
+            }
         }
-    }
-    post {
-        failure {
-            echo "Build or test failed"
+        post {
+         failure {
+                echo "Build or test failed"
         }
         success {
             echo "microservice build, test, and deploy completed"
@@ -107,6 +108,6 @@ pipeline {
         always {
             cleanWs()
         }
-    }
+     }
 }
 
