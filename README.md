@@ -19,7 +19,24 @@ They make us Jenkins jobs flexible and reusable by letting us pass values like:
  - Git branch to build
  - Docker image tag
  - environment to deploy
-   
+
+### Groovy expansion
+Groovy expansion happens before your shell commands run. Groovy evaluating ${...} expressions inside Groovy strings (like """ ... """) at pipeline runtime. It substitutes ${env.VAR} or ${someGroovyVar} with their actual values. The result is a plain string with no ${...} left, which is then passed to the shell.
+
+      def name = "Alice"
+    sh """
+      echo Hello, ${name}
+    """
+Groovy replaces ${name} with "Alice" before shell runs. Shell sees: echo Hello, Alice
+
+### Shell expansion
+Shell expansion happens after the shell command starts. The shell interprets variables like $VAR or ${VAR}, command substitutions, globbing (*), etc. It replaces $VAR with the value of the environment variable available in the shell environment.
+
+      sh '''
+       echo Hello, $USER
+      '''
+Groovy passes this string as-is (because single quotes prevent Groovy expansion). The shell expands $USER using its environment variables. Shell outputs: Hello, your-username
+
 ## AWS EC2 Instance
 
 - Go to AWS Console
