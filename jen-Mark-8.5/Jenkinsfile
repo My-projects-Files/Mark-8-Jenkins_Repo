@@ -98,7 +98,7 @@ pipeline {
             echo "Build or test failed"
         }
         success {
-            microservice build, test, and deploy completed
+            echo "microservice build, test, and deploy completed"
         }
         always {
             cleanWs()
