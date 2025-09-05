@@ -3,6 +3,10 @@ pipeline {
     environment {
         
         DOCKER_HUB_USER = "kamalsai33"
+        GIT_REPO_NAME = "Mark-10-Kubernet_repo"
+        GIT_USER_EMAIL = "kamaleshsai33@gmail.com"
+        GIT_USER_NAME = "saikamal33"
+        
     }
 
     stages {
@@ -11,16 +15,16 @@ pipeline {
                 git branch: 'main' url: 'https://github.com/saikamal33/Mark-8-Jenkins_Repo.git'
             }
         }
-        stage('install dependencides'){
+        stage('install dependencies'){
             steps{
                 script{
                     def SERVICE = ['user-service', 'order-service']
                     for (svc in SERVICE){
                         dir("${svc}") { 
                             sh """
-                                python3 -m venv ${svc}
-                                ./${svc}/bin/pip install -r requirements.txt
-                                ./${svc}/bin/pip install pytest flask8
+                                python3 -m venv venv
+                                ./venv/bin/pip install -r requirements.txt
+                                ./venv/bin/pip install pytest flake8
                             """
                         }
                     }
@@ -35,10 +39,10 @@ pipeline {
                         dir("${svc}"){
                             sh"""
                                 # this is for linting the code
-                                ./${svc}/bin/flask8 .
+                                ./venv/bin/flake8 .
 
                                 #to run automated test suites- we need to have tests present in tests file
-                                #./${svc}/bin/pytest tests
+                                #./venv/bin/pytest tests
 
                             """
                         }
@@ -65,8 +69,25 @@ pipeline {
         stage('updating kube image'){
             steps{
                 script{
-
-                }
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
+                        def DOCKER_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
+                        dir("${svc}") {
+                                	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                				sh '''
+                				    ls -l
+                				    git clone ${GIT_DEST_REPO}
+                				    cd Mark-10-Kubernet_repo
+                		                    git config user.email ${GIT_USER_EMAIL}
+                		                    git config user.name ${GIT_USER_NAME}
+                		                    sed -i "s|image: .*$|image: ${DOCKER_IMAGE}|" kube-Mark-10.6/${svc}/deployment.yml
+                		                    git add kube-Mark-10.6/${svc}/deployment.yml
+                		                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                		                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                		                '''
+                                    }
+                            }
+                    }
             }
 
         }
@@ -76,7 +97,7 @@ pipeline {
             echo "Build or test failed"
         }
         success {
-            microservice build, test, and deploy completed
+            echo "microservice build, test, and deploy completed"
         }
         always {
             cleanWs()
