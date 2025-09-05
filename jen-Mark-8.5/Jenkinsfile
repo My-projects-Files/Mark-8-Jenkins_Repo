@@ -3,6 +3,11 @@ pipeline {
     environment {
         
         DOCKER_HUB_USER = "kamalsai33"
+        DOCKER_HUB_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
+        GIT_REPO_NAME = "https://github.com/saikamal33/Mark-10-Kubernet_repo.git"
+        GIT_USER_EMAIL = "kamaleshsai33@gmail.com"
+        GIT_USER_NAME = "saikamal33"
+        
     }
 
     stages {
@@ -65,8 +70,25 @@ pipeline {
         stage('updating kube image'){
             steps{
                 script{
-
-                }
+                    def SERVICE = ['user-service', 'order-service']
+                    def DOCKER_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
+                    for (svc in SERVICE){
+                        dir("${svc}") {
+                                	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                				sh '''
+                				    ls -l
+                				    git clone ${GIT_DEST_REPO}
+                				    cd Mark-10-Kubernet_repo
+                		                    git config user.email ${GIT_USER_EMAIL}
+                		                    git config user.name ${GIT_USER_NAME}
+                		                    sed -i "s|image: .*$|image: ${DOCKER_IMAGE}|" kube-Mark-10.6/${svc}/deployment.yml
+                		                    git add kube-Mark-10.6/${svc}/deployment.yml
+                		                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                		                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                		                '''
+                                    }
+                            }
+                    }
             }
 
         }
