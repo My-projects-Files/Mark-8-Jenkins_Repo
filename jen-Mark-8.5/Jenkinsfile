@@ -81,14 +81,14 @@ pipeline {
                                 	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 				sh """
                 				    ls -l
-                				    git clone ${GIT_DEST_REPO}
+                				    git clone ${env.GIT_DEST_REPO}
                 				    cd Mark-10-Kubernet_repo
-                		                    git config user.email '${GIT_USER_EMAIL}'
-                		                    git config user.name '${GIT_USER_NAME}'
+                		                    git config user.email '${env.GIT_USER_EMAIL}'
+                		                    git config user.name '${env.GIT_USER_NAME}'
                 		                    sed -i "s|image: .*$|image: '${DOCKER_IMAGE}' |" kube-Mark-10.6/${svc}/deployment.yml
                 		                    git add kube-Mark-10.6/${svc}/deployment.yml
-                		                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                		                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                		                    git commit -m "Update deployment image to version ${env.BUILD_NUMBER}"
+                		                    git push https://${GITHUB_TOKEN}@github.com/${env.GIT_USER_NAME}/${env.GIT_REPO_NAME} HEAD:main
                 		            """
                                         }
                                 }
