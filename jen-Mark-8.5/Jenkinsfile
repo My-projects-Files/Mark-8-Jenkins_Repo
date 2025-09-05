@@ -39,10 +39,10 @@ pipeline {
                         dir("${svc}"){
                             sh"""
                                 # this is for linting the code
-                                ./${svc}/bin/flake8 .
+                                ./venv/bin/flake8 .
 
                                 #to run automated test suites- we need to have tests present in tests file
-                                #./${svc}/bin/pytest tests
+                                #./venv/bin/pytest tests
 
                             """
                         }
