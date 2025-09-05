@@ -10,6 +10,16 @@ Install Jenkins, configure Docker as agent, set up cicd, deploy applications to 
 - if we are accessing env vaiable inside the sh then we can just call it directly as "VALUE" , but if we are using it out side of sh then we need to call it as "env.VALUE"
 - **withCredentials** - this directly injects the credentials without the need to hardcode them. it is used to securely access credentials stored in Jenkins' Credentials Manager during a pipeline run.
 
+### Parameters in Jenkins:
+
+Parameters in Jenkins are inputs that we define in a pipeline or job that allow users (or automated triggers) to customize the build when they start it.
+
+They make us Jenkins jobs flexible and reusable by letting us pass values like:
+
+ - Git branch to build
+ - Docker image tag
+ - environment to deploy
+   
 ## AWS EC2 Instance
 
 - Go to AWS Console
