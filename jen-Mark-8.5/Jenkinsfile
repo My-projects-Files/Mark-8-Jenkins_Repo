@@ -1,25 +1,35 @@
 pipeline {
-    agent any   
+    agent any 
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Git branch to build')
+        string(name: 'IMAGE_TAG', defaultValue: '${BUILD_NUMBER}', description: 'Docker image tag')
+    }
     environment {
-        def SERVICE = ['user-service', 'order-service']
+        
         DOCKER_HUB_USER = "kamalsai33"
+        GIT_DEST_REPO = "https://github.com/saikamal33/Mark-10-Kubernet_repo.git"
+        GIT_REPO_NAME = "Mark-10-Kubernet_repo"
+        GIT_USER_EMAIL = "kamaleshsai33@gmail.com"
+        GIT_USER_NAME = "saikamal33"
+        
     }
 
     stages {
         stage('checkout'){
             steps{
-                git branch: 'main' url: 'https://github.com/saikamal33/Mark-8-Jenkins_Repo.git'
+                git branch: 'main' , url: 'https://github.com/saikamal33/Mark-8-Jenkins_Repo.git'
             }
         }
-        stage('install dependencides'){
+        stage('install dependencies'){
             steps{
                 script{
-                    for (svc in env.SERVICE){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}") { 
                             sh """
-                                python3 -m venv ${svc}
-                                ./${svc}/bin/pip install -r requirements.txt
-                                ./${svc}/bin/pip install pytest flask8
+                                python3 -m venv venv
+                                ./venv/bin/pip install -r requirement.txt
+                                ./venv/bin/pip install pytest flake8
                             """
                         }
                     }
@@ -29,14 +39,15 @@ pipeline {
         stage('testing'){
             steps{
                 script{
-                    for (svc in env.SERVICE){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}"){
                             sh"""
                                 # this is for linting the code
-                                ./${svc}/bin/flask8 .
+                                ./venv/bin/flake8 .
 
                                 #to run automated test suites- we need to have tests present in tests file
-                                #./${svc}/bin/pytest tests
+                                #./venv/bin/pytest tests
 
                             """
                         }
@@ -47,14 +58,13 @@ pipeline {
         stage('build and push code') {
             steps{
                 script{
-                    for (svc in env.SERVICE6){
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
                         dir("${svc}") {
-                            sh """
-                                echo "building ${svc}"
-                                docker build -t ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER} .
-                                echo "${DOCKER_HUB_PASS}" | docker login -u "${DOCKER_HUB_USER}" --password-stdin
-                                docker push ${DOCKER_HUB_USER}/${svc}:${BUILD_NUMBER}
-                            """
+                                def dockerimg = docker.build ("${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}")
+                                docker.withRegistry('https://index.docker.io/v1/', "docker-crd") {
+                                    dockerimg.push()
+                                }    
                         }
                     }
                 }
@@ -64,22 +74,40 @@ pipeline {
         stage('updating kube image'){
             steps{
                 script{
+                    def SERVICE = ['user-service', 'order-service']
+                    for (svc in SERVICE){
+                        def DOCKER_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
+                        dir("${svc}") {
+                                	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                				sh """
+                				    ls -l
+                				    git clone \$env.GIT_DEST_REPO \$env.GIT_REPO_NAME
+                				    cd \$env.GIT_REPO_NAME
+                		            git config user.email "\$env.GIT_USER_EMAIL"
+                		            git config user.name "\$env.GIT_USER_NAME"
+                		            sed -i "s|image: .*\\\$|image: '${DOCKER_IMAGE}' |" kube-Mark-10.6/${svc}/deployment.yml
+                		            git add kube-Mark-10.6/${svc}/deployment.yml
+                		            git commit -m "Update deployment image to version ${env.BUILD_NUMBER}"
+                		            git push https://${GITHUB_TOKEN}@github.com/${env.GIT_USER_NAME}/${env.GIT_REPO_NAME} HEAD:main
+                		            """
+                                        }
+                                }
+                        }
+                    }
 
                 }
             }
-
         }
-    }
-    post {
-        failure {
-            echo "Build or test failed"
+        post {
+         failure {
+                echo "Build or test failed"
         }
         success {
-            microservice build, test, and deploy completed
+            echo "microservice build, test, and deploy completed"
         }
         always {
             cleanWs()
         }
-    }
+     }
 }
 

@@ -8,6 +8,34 @@ Install Jenkins, configure Docker as agent, set up cicd, deploy applications to 
 - when we are using a script and calling a vaiable in sh we need to user "" insted of a ''.
 - Groovy allows interations and having run different script in diff directories.
 - if we are accessing env vaiable inside the sh then we can just call it directly as "VALUE" , but if we are using it out side of sh then we need to call it as "env.VALUE"
+- **withCredentials** - this directly injects the credentials without the need to hardcode them. it is used to securely access credentials stored in Jenkins' Credentials Manager during a pipeline run.
+
+### Parameters in Jenkins:
+
+Parameters in Jenkins are inputs that we define in a pipeline or job that allow users (or automated triggers) to customize the build when they start it.
+
+They make us Jenkins jobs flexible and reusable by letting us pass values like:
+
+ - Git branch to build
+ - Docker image tag
+ - environment to deploy
+
+### Groovy expansion
+Groovy expansion happens before your shell commands run. Groovy evaluating ${...} expressions inside Groovy strings (like """ ... """) at pipeline runtime. It substitutes ${env.VAR} or ${someGroovyVar} with their actual values. The result is a plain string with no ${...} left, which is then passed to the shell.
+
+      def name = "Alice"
+    sh """
+      echo Hello, ${name}
+    """
+Groovy replaces ${name} with "Alice" before shell runs. Shell sees: echo Hello, Alice
+
+### Shell expansion
+Shell expansion happens after the shell command starts. The shell interprets variables like $VAR or ${VAR}, command substitutions, globbing (*), etc. It replaces $VAR with the value of the environment variable available in the shell environment.
+
+      sh '''
+       echo Hello, $USER
+      '''
+Groovy passes this string as-is (because single quotes prevent Groovy expansion). The shell expands $USER using its environment variables. Shell outputs: Hello, your-username
 
 ## AWS EC2 Instance
 
