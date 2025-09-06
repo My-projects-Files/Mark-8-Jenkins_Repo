@@ -25,7 +25,7 @@ pipeline {
                 script{
                     def SERVICE = ['user-service', 'order-service']
                     for (svc in SERVICE){
-                        dir(jen-Mark-8.5/"${svc}") { 
+                        dir("jen-Mark-8.5/${svc}") { 
                             sh """
                                 ls -l
                                 pwd
@@ -43,7 +43,7 @@ pipeline {
                 script{
                     def SERVICE = ['user-service', 'order-service']
                     for (svc in SERVICE){
-                        dir(jen-Mark-8.5/"${svc}"){
+                        dir("jen-Mark-8.5/${svc}"){
                             sh"""
                                 # this is for linting the code
                                 ./venv/bin/flake8 .
@@ -62,7 +62,7 @@ pipeline {
                 script{
                     def SERVICE = ['user-service', 'order-service']
                     for (svc in SERVICE){
-                        dir(jen-Mark-8.5/"${svc}") {
+                        dir("jen-Mark-8.5/${svc}") {
                                 def dockerimg = docker.build ("${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}")
                                 docker.withRegistry('https://index.docker.io/v1/', "docker-crd") {
                                     dockerimg.push()
@@ -79,7 +79,7 @@ pipeline {
                     def SERVICE = ['user-service', 'order-service']
                     for (svc in SERVICE){
                         def DOCKER_IMAGE = "${env.DOCKER_HUB_USER}/${svc}:${env.BUILD_NUMBER}"
-                        dir(jen-Mark-8.5/"${svc}") {
+                        dir("jen-Mark-8.5/${svc}") {
                                 	withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 				sh """
                 				    ls -l
