@@ -46,7 +46,7 @@ pipeline {
                         dir("jen-Mark-8.5/${svc}"){
                             sh"""
                                 # this is for linting the code
-                                ./venv/bin/flake8 .
+                                ./venv/bin/flake8 . --exclude=venv
 
                                 #to run automated test suites- we need to have tests present in tests file
                                 #./venv/bin/pytest tests
