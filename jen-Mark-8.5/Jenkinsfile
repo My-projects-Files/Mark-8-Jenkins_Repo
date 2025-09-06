@@ -27,6 +27,7 @@ pipeline {
                     for (svc in SERVICE){
                         dir("${svc}") { 
                             sh """
+                                ls -l
                                 python3 -m venv venv
                                 ./venv/bin/pip install -r requirements.txt
                                 ./venv/bin/pip install pytest flake8
